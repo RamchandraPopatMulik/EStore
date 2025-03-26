@@ -37,12 +37,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User Updated Successfully !!!"));
+        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User Not Fund Of given Id"));
         user.setName(userDto.getName());
         user.setAbout(userDto.getAbout());
         user.setGender(userDto.getGender());
         user.setPassword(userDto.getPassword());
-        return null;
+        user.setImgName(userDto.getImgName());
+        User updatedUser= userRepository.save(user);
+        UserDto updatedDto1 = entityToDto(updatedUser);
+        return updatedDto1;
     }
 
     @Override
