@@ -1,11 +1,18 @@
 package com.lcwd.electronic.store.ElectronicStore1.services.Impl;
 
+import com.lcwd.electronic.store.ElectronicStore1.dtos.PageableResponse;
 import com.lcwd.electronic.store.ElectronicStore1.dtos.UserDto;
 import com.lcwd.electronic.store.ElectronicStore1.entities.User;
+import com.lcwd.electronic.store.ElectronicStore1.exceptions.ResourseNotFoundException;
+import com.lcwd.electronic.store.ElectronicStore1.helper.Helper;
 import com.lcwd.electronic.store.ElectronicStore1.repositories.UserRepository;
 import com.lcwd.electronic.store.ElectronicStore1.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,12 +43,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Fund Of given Id"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourseNotFoundException("User Not Fund Of given Id"));
+
         user.setName(userDto.getName());
         user.setAbout(userDto.getAbout());
         user.setGender(userDto.getGender());
         user.setPassword(userDto.getPassword());
         user.setImgName(userDto.getImgName());
+
+
         User updatedUser = userRepository.save(user);
         UserDto updatedDto1 = entityToDto(updatedUser);
         return updatedDto1;
@@ -49,16 +59,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Deleted Successfully !!!"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourseNotFoundException("User Deleted Successfully !!!"));
         userRepository.delete(user);
     }
 
-    @Override
-    public List<UserDto> getAllUser() {
-        List<User> users = userRepository.findAll();
-        List<UserDto> dtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
+    public PageableResponse<UserDto> getAllUser(int pageNumber, int pageSize, String sortBy, String sortDir) {
 
-        return dtoList;
+        Sort sort = Sort.by(sortBy);
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
+        Page<User> page = userRepository.findAll(pageable);
+        PageableResponse<UserDto> response = Helper.getPageableResposne(page, UserDto.class);
+
+        return response;
     }
 
     @Override

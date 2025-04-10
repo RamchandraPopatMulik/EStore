@@ -1,6 +1,5 @@
 package com.lcwd.electronic.store.ElectronicStore1.dtos;
 
-import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
@@ -10,12 +9,15 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiResponseMessage {
+public class ImageResponse {
 
-    private String message;
+        private String imageName;
 
-    private boolean success;
+        private String message;
 
-    private HttpStatus status;
+        private boolean success;
+
+        private HttpStatus status;
 
 }
+
